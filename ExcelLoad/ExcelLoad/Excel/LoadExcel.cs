@@ -123,9 +123,5 @@ class CLoadExcel
         }
         bw.Close();
         fs.Close();
-
-        //FileStream fsf = new FileStream(strPath, FileMode.Open);
-        //BinaryReader br = new BinaryReader(fsf);
-        //int temp = br.ReadInt32();
     }
 }
