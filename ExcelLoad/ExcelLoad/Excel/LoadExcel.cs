@@ -2,6 +2,16 @@
 using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
 
+public static class Path
+{
+    public static string OutPath;
+    public static string InPath;
+    public static string SourcePath;
+    public static string LoadBinaryPath;
+
+    public static System.Collections.Generic.LinkedList<string> ExcelList = new System.Collections.Generic.LinkedList<string>();
+}
+
 public class CSheetData
 {
     public System.Collections.ArrayList VarArray = new System.Collections.ArrayList();
@@ -45,7 +55,8 @@ class CLoadExcel
         BinaryWriter bw = new BinaryWriter(fs);
 
         Excel.Workbook WorkBook = Application.Workbooks.Open(FileInfo.FullName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-        for(int i=0; i<WorkBook.Worksheets.Count; ++i)
+        
+        for (int i=0; i<WorkBook.Worksheets.Count; ++i)
         {
             Excel.Worksheet WorkSheet = WorkBook.Worksheets.get_Item(i + 1);
             Excel.Range Range = WorkSheet.UsedRange;
@@ -121,6 +132,8 @@ class CLoadExcel
                 }
             }
         }
+
+        WorkBook.Close();
         bw.Close();
         fs.Close();
     }

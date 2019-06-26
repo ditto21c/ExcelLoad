@@ -17,7 +17,7 @@ class CreateCpp
 
         str[++Index] = "using System;";
         str[++Index] = "using System.IO;";
-        str[++Index] = "using ArrayList = System.Collections.ArrayList;";
+        str[++Index] = "using System.Collections.Generic;";
         str[++Index] = "using UnityEngine;";
 
         ++Index; // new Line
@@ -134,27 +134,46 @@ class CreateCpp
             ++Index; // new Line
         }
 
+       
+
+        foreach (var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
+        {
+            str[++Index] = "public class C" + Key + "Sheet";
+            str[++Index] = "{";
+
+            CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
+            string className = "C" + Key;
+            str[++Index] = "\tpublic C" + Key + "[] vec = new C" + Key + "[" + Convert.ToString(SheetData.IndexCount) + "]" + ";";
+            str[++Index] = "\tpublic Dictionary<int, C" + Key + "> map = new Dictionary<int, C" + Key +">();";
+
+            str[++Index] = "};";
+        }
+
         str[++Index] = "public class C" + FileName;
         str[++Index] = "{";
+
         foreach (var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
         {
             CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
-            str[++Index] = "\tpublic C" + Key + "[] " + Key + " = new C" + Key + "[" + Convert.ToString(SheetData.IndexCount) + "]" + ";";
-
+            str[++Index] = "\tpublic C" + Key + "Sheet " + Key + "Sheet = new C" + Key + "Sheet();";
         }
+        ++Index; // new Line
 
-        str[++Index] = "\tpublic void Load(TextAsset InTextAsset)";
+        str[++Index] = "\tpublic void Load()";
         str[++Index] = "\t{";
-        str[++Index] = "\t\tStream kStream = new MemoryStream(InTextAsset.bytes);";
-        str[++Index] = "\t\tBinaryReader BinaryReader = new BinaryReader(kStream);";
+        str[++Index] = "\t\tTextAsset Asset = Resources.Load<TextAsset>(\"TextAssets/Tables/" + FileName + "\");";
+        str[++Index] = "\t\tStream stream = new MemoryStream(Asset.bytes);";
+        str[++Index] = "\t\tBinaryReader BinaryReader = new BinaryReader(stream);";
 
         foreach (var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
         {
             CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
             str[++Index] = "\t\tfor(int i=0; i<" + Convert.ToString(SheetData.IndexCount) + "; ++i)";
             str[++Index] = "\t\t{";
-            str[++Index] = "\t\t\t" + Key + "[i] = new C" + Key + "();";
-            str[++Index] = "\t\t\t" + Key + "[i].Load(BinaryReader);";
+            str[++Index] = "\t\t\t" +Key+"Sheet." + "vec[i] = new C" + Key + "();";
+            str[++Index] = "\t\t\t" + Key + "Sheet.vec[i].Load(BinaryReader);";
+            str[++Index] = "\t\t\tint key =" + Key + "Sheet.vec[i]." + (string)SheetData.VarArray[0] + ";";
+            str[++Index] = "\t\t\t" + Key + "Sheet.map.Add(key, " + Key + "Sheet.vec[i]); ";
             str[++Index] = "\t\t}";
         }
         str[++Index] = "\t}";

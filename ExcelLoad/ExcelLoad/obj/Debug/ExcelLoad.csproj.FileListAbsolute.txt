@@ -1,9 +1,0 @@
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\bin\Debug\ExcelLoad.exe.config
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\bin\Debug\ExcelLoad.exe
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\bin\Debug\ExcelLoad.pdb
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\obj\Debug\ExcelLoad.csprojResolveAssemblyReference.cache
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\obj\Debug\ExcelLoad.Properties.Resources.resources
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\obj\Debug\ExcelLoad.csproj.GenerateResource.Cache
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\obj\Debug\ExcelLoad.exe
-c:\users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\obj\Debug\ExcelLoad.pdb
-C:\Users\ditto\documents\visual studio 2015\Projects\ExcelLoad\ExcelLoad\obj\Debug\ExcelLoad.csproj.ResolveComReference.cache
