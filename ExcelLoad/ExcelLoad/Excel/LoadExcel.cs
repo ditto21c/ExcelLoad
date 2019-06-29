@@ -59,6 +59,9 @@ class CLoadExcel
         for (int i=0; i<WorkBook.Worksheets.Count; ++i)
         {
             Excel.Worksheet WorkSheet = WorkBook.Worksheets.get_Item(i + 1);
+            if (WorkSheet.Name.Contains("#"))
+                continue;
+
             Excel.Range Range = WorkSheet.UsedRange;
 
             CSheetData SheetData = new CSheetData();
@@ -74,6 +77,7 @@ class CLoadExcel
                     break;
                 }
             }
+
 
             for (RowCount = 1; RowCount <= Range.Rows.Count; ++RowCount)
             {
