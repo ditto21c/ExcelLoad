@@ -70,18 +70,18 @@ class CreateCpp
                     {
                         str[++Index] = "\t\tfor(int i=0; i<" + Convert.ToString(ArrayCount+1) + "; ++i)";
                         str[++Index] = "\t\t{";
-                        str[++Index] += "\t\t\t" + ((string)SheetData.VarArray[i-1] + "[i] = ");
+                        str[++Index] += "\t\t\t" + ((string)SheetData.VarArray[i-1] + ".Add(");
                         if (SheetData.TypeArray[i - 1].ToString().Contains("string"))
                         {
-                            str[Index] += "BinaryReader.ReadString();";
+                            str[Index] += "BinaryReader.ReadString());";
                         }
                         else if (SheetData.TypeArray[i - 1].ToString().Contains("int"))
                         {
-                            str[Index] += "BinaryReader.ReadInt32();";
+                            str[Index] += "BinaryReader.ReadInt32());";
                         }
                         else if (SheetData.TypeArray[i - 1].ToString().Contains("float"))
                         {
-                            str[Index] += "BinaryReader.ReadSingle();";
+                            str[Index] += "BinaryReader.ReadSingle());";
                         }
                         str[++Index] = "\t\t}";
                     }
