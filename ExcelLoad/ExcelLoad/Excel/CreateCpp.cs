@@ -25,10 +25,11 @@ class CreateCpp
 
         string TempStr = "";
 
-        foreach(var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
+        foreach(var sheetDataInfo in LoadExcel.m_ExcelData.SheetDatas)
         {
-            str[++Index] = "public class C" + Key;
-            CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
+            var SheetDataInfo = sheetDataInfo as CSheetDataInfo;
+            str[++Index] = "public class C" + SheetDataInfo.Name;
+            CSheetData SheetData = SheetDataInfo.SheetData;
 
             str[++Index] = "{";
 
@@ -142,15 +143,16 @@ class CreateCpp
 
        
 
-        foreach (var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
+        foreach (var sheetData in LoadExcel.m_ExcelData.SheetDatas)
         {
-            str[++Index] = "public class C" + Key + "Sheet";
+            CSheetDataInfo SheetDataInfo = sheetData as CSheetDataInfo;
+            str[++Index] = "public class C" + SheetDataInfo.Name + "Sheet";
             str[++Index] = "{";
 
-            CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
-            string className = "C" + Key;
-            str[++Index] = "\tpublic C" + Key + "[] vec = new C" + Key + "[" + Convert.ToString(SheetData.IndexCount) + "]" + ";";
-            str[++Index] = "\tpublic Dictionary<int, C" + Key + "> map = new Dictionary<int, C" + Key +">();";
+            CSheetData SheetData = SheetDataInfo.SheetData;
+            string className = "C" + SheetDataInfo.Name;
+            str[++Index] = "\tpublic C" + SheetDataInfo.Name + "[] vec = new C" + SheetDataInfo.Name + "[" + Convert.ToString(SheetData.IndexCount) + "]" + ";";
+            str[++Index] = "\tpublic Dictionary<int, C" + SheetDataInfo.Name + "> map = new Dictionary<int, C" + SheetDataInfo.Name + ">();";
 
             str[++Index] = "};";
         }
@@ -158,10 +160,11 @@ class CreateCpp
         str[++Index] = "public class C" + FileName;
         str[++Index] = "{";
 
-        foreach (var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
+        foreach (var sheetData in LoadExcel.m_ExcelData.SheetDatas)
         {
-            CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
-            str[++Index] = "\tpublic C" + Key + "Sheet " + Key + "Sheet = new C" + Key + "Sheet();";
+            CSheetDataInfo SheetDataInfo = sheetData as CSheetDataInfo;
+            CSheetData SheetData = SheetDataInfo.SheetData;
+            str[++Index] = "\tpublic C" + SheetDataInfo.Name + "Sheet " + SheetDataInfo.Name + "Sheet = new C" + SheetDataInfo.Name + "Sheet();";
         }
         ++Index; // new Line
 
@@ -171,15 +174,16 @@ class CreateCpp
         str[++Index] = "\t\tStream stream = new MemoryStream(Asset.bytes);";
         str[++Index] = "\t\tBinaryReader BinaryReader = new BinaryReader(stream);";
 
-        foreach (var Key in LoadExcel.m_ExcelData.SheetDataHash.Keys)
+        foreach (var sheetDataInfo in LoadExcel.m_ExcelData.SheetDatas)
         {
-            CSheetData SheetData = (CSheetData)LoadExcel.m_ExcelData.SheetDataHash[Key];
+            CSheetDataInfo SheetDataInfo = sheetDataInfo as CSheetDataInfo;
+            CSheetData SheetData = SheetDataInfo.SheetData;
             str[++Index] = "\t\tfor(int i=0; i<" + Convert.ToString(SheetData.IndexCount) + "; ++i)";
             str[++Index] = "\t\t{";
-            str[++Index] = "\t\t\t" +Key+"Sheet." + "vec[i] = new C" + Key + "();";
-            str[++Index] = "\t\t\t" + Key + "Sheet.vec[i].Load(BinaryReader);";
-            str[++Index] = "\t\t\tint key =" + Key + "Sheet.vec[i]." + (string)SheetData.VarArray[0] + ";";
-            str[++Index] = "\t\t\t" + Key + "Sheet.map.Add(key, " + Key + "Sheet.vec[i]); ";
+            str[++Index] = "\t\t\t" + SheetDataInfo.Name + "Sheet." + "vec[i] = new C" + SheetDataInfo.Name + "();";
+            str[++Index] = "\t\t\t" + SheetDataInfo.Name + "Sheet.vec[i].Load(BinaryReader);";
+            str[++Index] = "\t\t\tint key =" + SheetDataInfo.Name + "Sheet.vec[i]." + (string)SheetData.VarArray[0] + ";";
+            str[++Index] = "\t\t\t" + SheetDataInfo.Name + "Sheet.map.Add(key, " + SheetDataInfo.Name + "Sheet.vec[i]); ";
             str[++Index] = "\t\t}";
         }
         str[++Index] = "\t}";

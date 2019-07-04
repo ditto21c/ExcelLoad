@@ -19,9 +19,16 @@ public class CSheetData
     public int IndexCount = 0;
 };
 
+public class CSheetDataInfo
+{
+    public string Name;
+    public CSheetData SheetData;
+
+}
 public class CExcelData
 {
-    public System.Collections.Hashtable SheetDataHash = new System.Collections.Hashtable();
+    //public System.Collections.Hashtable SheetDataHash = new System.Collections.Hashtable();
+    public System.Collections.ArrayList SheetDatas = new System.Collections.ArrayList();
 }
 
 class CLoadExcel
@@ -65,7 +72,10 @@ class CLoadExcel
             Excel.Range Range = WorkSheet.UsedRange;
 
             CSheetData SheetData = new CSheetData();
-            m_ExcelData.SheetDataHash.Add(WorkSheet.Name, SheetData);
+            CSheetDataInfo SheetDataInfo = new CSheetDataInfo();
+            SheetDataInfo.Name = WorkSheet.Name;
+            SheetDataInfo.SheetData = SheetData;
+            m_ExcelData.SheetDatas.Add(SheetDataInfo);
 
             for (RowCount = 1; RowCount <= Range.Rows.Count+1; ++RowCount)
             {
