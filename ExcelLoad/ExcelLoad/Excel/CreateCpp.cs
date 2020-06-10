@@ -41,10 +41,10 @@ class CreateCpp
                     str[++Index] = "\tpublic ";
 
                     bool bArrayList = false;
-                    if (SheetData.TypeArray[i].ToString().Contains("ArrayList"))
+                    if (SheetData.TypeArray[i].ToString().Contains("List"))
                     {
                         bArrayList = true;
-                        str[Index] += "ArrayList";
+                        str[Index] += SheetData.TypeArray[i].ToString();
                     }
                     else
                         str[Index] += (string)SheetData.TypeArray[i];
@@ -52,7 +52,7 @@ class CreateCpp
                     str[Index] += " ";
                     str[Index] += (string)SheetData.VarArray[i];
                     
-                    str[Index] += bArrayList ? " = new ArrayList();" : ";";
+                    str[Index] += bArrayList ? " = new " + SheetData.TypeArray[i].ToString() + "();" : ";";
                     TempStr = (string)SheetData.VarArray[i];
                 }
             }
@@ -88,7 +88,7 @@ class CreateCpp
                     }
 
                     ArrayCount = 0;
-                    if (!SheetData.TypeArray[i].ToString().Contains("ArrayList"))
+                    if (!SheetData.TypeArray[i].ToString().Contains("List"))
                     {
                         str[++Index] += "\t\t" + ((string)SheetData.VarArray[i] + " = ");
                         if ((string)SheetData.TypeArray[i] == "string")

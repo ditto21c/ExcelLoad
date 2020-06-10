@@ -30,6 +30,8 @@ namespace ExcelLoad
             LoadExcelFilesAndCreateCsFiles();
 
             label1.Text = "Success Load Excel";
+
+            Close();
         }
 
         void LoadiniFile()

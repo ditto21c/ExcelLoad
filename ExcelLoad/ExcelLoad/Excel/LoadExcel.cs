@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Collections;
+using System.Collections.Generic;
 
 public static class Path
 {
@@ -9,7 +11,7 @@ public static class Path
     public static string SourcePath;
     public static string LoadBinaryPath;
 
-    public static System.Collections.Generic.LinkedList<string> ExcelList = new System.Collections.Generic.LinkedList<string>();
+    public static LinkedList<string> ExcelList = new LinkedList<string>();
 }
 
 public class CSheetData
@@ -41,7 +43,47 @@ class CLoadExcel
     {
         Application.Quit();
     }
-        
+    string MakePath(System.IO.FileInfo FileInfo)
+    {
+        string strPath = Path.OutPath;
+        string FileName = FileInfo.Name;
+        int Index = FileName.IndexOf(".");
+        FileName = FileName.Substring(0, Index);
+        FileName += ".bytes";
+        strPath += FileName;
+        return strPath;
+    }
+    void InitRow(CSheetData SheetData, Excel.Range Range, ref int MaxRow)
+    {
+        for (int RowCount = 1; RowCount <= Range.Rows.Count + 1; ++RowCount)
+        {
+            if ((Range.Cells[RowCount, 1] as Excel.Range).Value2 == null)
+            {
+                MaxRow = RowCount-1;
+                SheetData.IndexCount = RowCount - 3;
+                break;
+            }
+        }
+    }
+    ArrayList InitColoumn(Excel.Range Range, ref int MaxColumn)
+    {
+        ArrayList NotReadColumns = new ArrayList();
+        for (int ColumnCount = 1; ColumnCount <= Range.Columns.Count + 1; ++ColumnCount)
+        {
+            if ((Range.Cells[1, ColumnCount] as Excel.Range).Value2 == null)
+            {
+                MaxColumn = ColumnCount - 1;
+                break;
+            }
+            else
+            {
+                string Value = (Range.Cells[1, ColumnCount] as Excel.Range).Value2;
+                if (Value.Contains("#"))
+                    NotReadColumns.Add(ColumnCount);
+            }
+        }
+        return NotReadColumns;
+    }
     public void LoadExcel(System.IO.FileInfo FileInfo)
     {
         string str;
@@ -51,12 +93,7 @@ class CLoadExcel
         int MaxColumn = 0;
         int MaxRow = 0;
 
-        string strPath = Path.OutPath;
-        string FileName = FileInfo.Name;
-        int Index = FileName.IndexOf(".");
-        FileName = FileName.Substring(0, Index);
-        FileName += ".bytes";
-        strPath += FileName;
+        string strPath = MakePath(FileInfo);
 
         FileStream fs = new FileStream(strPath, FileMode.Create);
         BinaryWriter bw = new BinaryWriter(fs);
@@ -76,30 +113,17 @@ class CLoadExcel
             SheetDataInfo.Name = WorkSheet.Name;
             SheetDataInfo.SheetData = SheetData;
             m_ExcelData.SheetDatas.Add(SheetDataInfo);
+            
+            InitRow(SheetData, Range, ref MaxRow);
+            ArrayList NotReadColumns = InitColoumn(Range, ref MaxColumn);
 
-            for (RowCount = 1; RowCount <= Range.Rows.Count+1; ++RowCount)
+            for (RowCount = 1; RowCount <= MaxRow; ++RowCount)
             {
-                if ((Range.Cells[RowCount, 1] as Excel.Range).Value2 == null)
+                for (ColumnCount = 1; ColumnCount <= MaxColumn; ++ColumnCount)
                 {
-                    //bw.Write(RowCount -3);
-                    MaxRow = RowCount;
-                    SheetData.IndexCount = RowCount - 3;
-                    break;
-                }
-            }
-
-
-            for (RowCount = 1; RowCount <= Range.Rows.Count; ++RowCount)
-            {
-                if (MaxRow == RowCount)
-                    break;
-
-                for (ColumnCount = 1; ColumnCount <= Range.Columns.Count; ColumnCount++)
-                {
-                    if (RowCount == 1 && (Range.Cells[RowCount, ColumnCount] as Excel.Range).Value2 == null)
-                        MaxColumn = ColumnCount;
-                    else if (MaxColumn != 0 && MaxColumn <= ColumnCount)
-                        break;
+                    if (NotReadColumns.Contains(ColumnCount))
+                        continue;
+                    // 공백일때 0으로 값 초기화
                     else if ((Range.Cells[RowCount, ColumnCount] as Excel.Range).Value2 == null)
                     {
                         if (SheetData.TypeArray[ColumnCount - 1].ToString().Contains("int"))
@@ -117,22 +141,25 @@ class CLoadExcel
                         continue;
                     }
 
+                    // 변수명
                     if (RowCount == 1)
                     {
                         SheetData.VarArray.Add((Range.Cells[RowCount, ColumnCount] as Excel.Range).Value2);
                     }
+                    // 자료형
                     else if(RowCount == 2)
                     {
                         SheetData.TypeArray.Add((Range.Cells[RowCount, ColumnCount] as Excel.Range).Value2);
                     }
                     else
                     {
-                        if (SheetData.TypeArray[ColumnCount - 1].ToString().Contains("int"))
+                        int TypeCheckIndex = ColumnCount - 1 - NotReadColumns.Count;
+                        if (SheetData.TypeArray[TypeCheckIndex].ToString().Contains("int"))
                         {
                             Num = (double)(Range.Cells[RowCount, ColumnCount] as Excel.Range).Value2;
                             bw.Write((int)Num);
                         }
-                        else if(SheetData.TypeArray[ColumnCount - 1].ToString().Contains("float"))
+                        else if(SheetData.TypeArray[TypeCheckIndex].ToString().Contains("float"))
                         {
                             Num = (double)(Range.Cells[RowCount, ColumnCount] as Excel.Range).Value2;
                             bw.Write((float)Num);
